@@ -2,28 +2,32 @@ require('dotenv').config()
 const { Client } = require('pg');
 // He instalado la biblioteca "dotenv" (npm i dotenv --save) -> https://www.npmjs.com/package/dotenv para esconder las variables en el repositorio público
 // Además, he ignorado el archivo .env escribiendo su nombre en el archivo .gitignore
-// Por otro lado, para poder establecer la coneción, es necesaria la biblioteca "pg" (npm i pg) -> https://www.npmjs.com/package/pg 
+// Por otro lado, para poder establecer la conexión, es necesaria la biblioteca "pg" (npm i pg) -> https://www.npmjs.com/package/pg 
 
 // https://dev.to/mohsenkamrani/run-postgresql-with-docker-locally-and-connect-to-it-with-nodejs-451g
 // https://www.commandprompt.com/education/how-to-create-a-postgresql-database-in-docker/ 
 
+// SQL handbook -> https://www.freecodecamp.org/news/a-beginners-guide-to-sql/ 
+
 /** 
- * CREAR TABLA CON DOCKER DESDE LA CONSOLA BASH
+ * CREAR TABLA CON DOCKER DESDE LA CONSOLA BASH 
  * -> docker run --name [name-of-docker-container] -p 5432:5432 -e POSTGRES_PASSWORD=[password] -e POSTGRES_USER=[user] -d postgres
  * -> docker ps
  * -> docker exec -ti [name-of-docker-container] bash
  * -> psql -h localhost -U [username]
- * -> CREATE DATABASE [name-of-db = p.e: employees];
+ * -> CREATE DATABASE [name-of-db = p.e: testdb];
  * -> \l
  * -> \c [name-of-db];
  * -> CREATE TABLE tech_authors(ID INT PRIMARY KEY NOT NULL, NAME TEXT NOT NULL, TYPE TEXT NOT NULL, CATEGORY TEXT NOT NULL, ATICLES INT NOT NULL);
  * -> INSERT INTO tech_authors VALUES (1, 'Laiba', 'Senior', 'Docker', 50);
  * -> SELECT * FROM tech_authors;
 
+    (existe esta forma o cambiando el comando inicial por el que recomienda docker en la imagen de postgreSQL -> https://hub.docker.com/_/postgres)
 
  -> La tabla será alojada en el sistema y podrá verse en la app pgAdmin, usualmente en el servidor y con el usuario y contraseña principales.
  En mi caso, se crea en un servidor llamado 'PostgreSQL 16', en la base de datos 'postgres';
- Por esta razón, también podéis conectaros al servidor que creéis desde pgAdmin, crearos otra base de datos y nombrarla como queráis para conectaros a ella;
+ Por esta razón, también podéis conectaros al servidor que creéis desde pgAdmin, crearos otra base de datos y nombrarla como queráis para conectaros a ella, 
+ o incluso creárosla desde la consola de "SQL powershell (psql)" que podéis encontrar una vez descarguéis PostgreSQL escribiendo psql en el buscador de inicio.
  */
 
 // 10 - Definir el objeto que nos permitirá conectarnos:
@@ -32,7 +36,7 @@ const { Client } = require('pg');
  * host: [usualmente "localhost"]
  * database: [nombre de la base de datos, en nuestro caso el nombre del contenedor]
  * password: [valor de POSTGRES_PASSWORD]
- * port: [el puerto que hayamos escogido, por defecto: 5432]
+ * port: [el puerto que hayamos escogido, por defecto: 5432] -> esto junto al host os conectará al server que tengáis creado o creéis
  */
 const connectionData = {
     user: process.env.SECRET_U, 
@@ -48,9 +52,8 @@ const client = new Client(connectionData);
 const simpleTypeQuery = (query) => {client.query(String(query), showRows)}
 
 client.connect().then(() => {
-    simpleTypeQuery(`
-    ALTER TABLE employees
-    RENAME COLUMN title TO status;`)
+    console.log(process.env.SECRET_P)
+    // simpleTypeQuery('SELECT NOW()');
 
 }).catch(err => {
     console.error(err);
@@ -67,7 +70,7 @@ const showRows = (err, res) => {
     }
 
     client.end();
-    process.exit(1);
+    process.exit();
 };
 
 
