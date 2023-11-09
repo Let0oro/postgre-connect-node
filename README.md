@@ -1,4 +1,4 @@
-# postgre-connect-node
+# psql-node-template
 Template for connections between nodeJS and a postgres BD with or without Docker
 
 
